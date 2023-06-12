@@ -15,8 +15,9 @@
 
 ## Installation
 - Clone this repository: `git clone https://github.com/tomasccasares/-API-REST-DJANGO`.
-- Go to the project directory: `cd api`.
+- Go to the project directory: `cd cs_api`.
 - Install dependencies: `pip install -r requirements.txt`.
-- Configure the database in the `settings.py` inside the project's `api` folder.
+- Configure the database in the `settings.py` inside the project's `cs_api` folder.
 - Performs database migrations: `python manage.py makemigrations && python manage.py migrate`.
+- Create a super user administrator: `python manage.py createsuperuser`.
 - Start the local server: `python manage.py runserver`.
