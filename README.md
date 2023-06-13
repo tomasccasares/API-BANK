@@ -14,7 +14,7 @@
 - JWT (JSON Web Tokens).
 
 ## Installation
-- Clone this repository: `git clone https://github.com/tomasccasares/-API-REST-DJANGO`.
+- Clone this repository: `git clone https://github.com/tomasccasares/API-BANK.git`.
 - Go to the project directory: `cd cs_api`.
 - Install dependencies: `pip install -r requirements.txt`.
 - Configure the database in the `settings.py` inside the project's `cs_api` folder.
