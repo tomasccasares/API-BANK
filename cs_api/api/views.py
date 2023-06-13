@@ -1,13 +1,14 @@
 from django.shortcuts import render
 from django.contrib.auth.models import Group
 from django.db import transaction, IntegrityError
+from django.core.paginator import Paginator, EmptyPage
 
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.permissions import AllowAny, IsAuthenticated
 
-from api import forms, models, serializers, constants
+from api import forms, models, serializers, constants, pagination, extractor
 from api.permissions import IsAdmin, IsUser
 
 
@@ -38,10 +39,33 @@ def get_accounts(request):
     if not request.user.is_authenticated:
         return Response(status=status.HTTP_401_UNAUTHORIZED)
     
-    users = serializers.UserSerializer(models.User.objects.all(), many=True).data
+    query = request.GET.get("q", None)
 
-    return Response(users, status=status.HTTP_200_OK)
+    page, page_size, err = extractor.extract_paging_from_request(request=request)
 
+    if err != None:
+        return err
+    
+    if query != None:
+        queryset = models.User.objects.filter(username__icontains=query).order_by("-id")
+    else:
+        queryset = models.User.objects.all().order_by("-id")
+
+    try:
+        query_paginator = Paginator(queryset, page_size)
+
+        query_data = query_paginator.page(page)
+
+        serializer = serializers.UserSerializer(query_data, many=True)
+
+        res = Response(serializer.data)
+
+        res = pagination.add_paging_to_response(request, res, query_data, page, query_paginator.num_pages)
+
+        return res
+    except EmptyPage:
+        return Response(status=status.HTTP_404_NOT_FOUND)
+        
 
 @api_view(["DELETE"])
 @permission_classes([IsAdmin])
